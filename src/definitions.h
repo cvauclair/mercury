@@ -1,10 +1,10 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-// Number of goods in the simulation
-static const unsigned int MAX_GOODS = 6;
+// Definitions of various data structures used throughout the simulation including entities and statistics collections
 
 // Agent definition
+template<unsigned int MAX_GOODS>
 struct Agent{
 	// Economic state
 	float balance = 100.0;	// Starting funds
@@ -29,10 +29,30 @@ struct Offer{
 };
 
 // Job definition
+template<unsigned int MAX_GOODS>
 struct Job{
 	char *name = nullptr;
 	char inputs[MAX_GOODS] = {0};
 	char ouputs[MAX_GOODS] = {0};
+};
+
+// Structure holding statistics for each day (or timestep)
+template<unsigned int MAX_GOODS>
+struct DayStats{
+	// Market offer stats
+	unsigned int asksNb[MAX_GOODS] = {0};
+	unsigned int bidsNb[MAX_GOODS] = {0};
+	unsigned int fulfilledAsksNb[MAX_GOODS] = {0};
+	unsigned int fulfilledBidsNb[MAX_GOODS] = {0};
+
+	// Goods stats
+	unsigned int quantityConsumed[MAX_GOODS] = {0};
+	unsigned int quantityProduced[MAX_GOODS] = {0};
+	unsigned int quantityTraded[MAX_GOODS] = {0};
+
+	// Price stats
+	float moneyTraded[MAX_GOODS] = {0};
+	float averagePrice[MAX_GOODS] = {0};
 };
 
 #endif

@@ -10,6 +10,11 @@
 #include "config.h"
 #include "statsmanager.h"
 
+#include "consumptionsystem.h"
+#include "productionsystem.h"
+
+#include "agentmanager.h"
+
 // Simulation flow:
 //	for each timestep
 //		do agent consumption
@@ -19,7 +24,7 @@
 //		update agents' state (includes updating price of offers and changing job) <- The step where the machine learning will fit!
 class Simulation{
 	public:
-		Simulation(unsigned int popSize);
+		Simulation(unsigned int popSize, unsigned int goodsNb);
 		~Simulation();
 
 		// Run the simulation for 'days' days (Note: day is only a word, it could be any timestep where a full cycle occurs)
@@ -30,10 +35,6 @@ class Simulation{
 		StatsManager &getStatsManager();
 
 	private:
-		// Production & consumption methods
-		void doProduction();
-		void doConsumption();
-
 		// Double auction methods
 		void generateOffers();
 		float getPrice(unsigned int agentId, unsigned int goodId, bool isSelling);
@@ -50,12 +51,16 @@ class Simulation{
 		// Data
 		unsigned int currentDay = 0;
 
-		std::vector<Agent> agents;
+		// Simulation databases
+		AgentManager agentManager;
+
+		std::vector<Agent<MAX_GOODS>> agents;
 		std::array<std::vector<Offer>, MAX_GOODS> asks;
 		std::array<std::vector<Offer>, MAX_GOODS> bids;
 
+		// Data collection
 		StatsManager statsManager;
-		DayStats *dayStats = nullptr;
+		DayStats<MAX_GOODS> *dayStats = nullptr;
 };
 
 #endif

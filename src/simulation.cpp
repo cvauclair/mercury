@@ -1,24 +1,27 @@
 #include "simulation.h"
 
-Simulation::Simulation(unsigned int popSize)
+Simulation::Simulation(unsigned int popSize, unsigned int goodsNb)
 {
 	unsigned int jobsNum = jobs.size();
 	unsigned int jobId = 0;
 
+	// Set stats manager
+//	this->statsManager = StatsManager::instance();
+
 	// Create agents and rotate the jobs they are given until popSize agents have been created,
 	// ensuring an even spread of jobs amongst agents at the start of the simulation
-	Agent a;
+	Agent<MAX_GOODS> agent;
 	for(int i = 0; i < popSize; i++){
 		// Init new agent
-		a.balance = 10;
-		a.jobId = jobId;
-		for(int i = 0; i < MAX_GOODS; i++) {a.stockpile[i] = 1;}
-		a.satisfaction = 1.0;
-		for(int i = 0; i < MAX_GOODS; i++) {a.offerPrice[i] = 1.0;}
-		for(int i = 0; i < MAX_GOODS; i++) {a.lastOfferFulfilled[i] = true;}
+		agent.balance = 10;
+		agent.jobId = jobId;
+		for(int i = 0; i < MAX_GOODS; i++) {agent.stockpile[i] = 1;}
+		agent.satisfaction = 1.0;
+		for(int i = 0; i < MAX_GOODS; i++) {agent.offerPrice[i] = 1.0;}
+		for(int i = 0; i < MAX_GOODS; i++) {agent.lastOfferFulfilled[i] = true;}
 
 		// Add new agent
-		this->agents.push_back(a);
+		this->agents.push_back(agent);
 
 		// Increment job counter
 		jobId++;
@@ -44,9 +47,9 @@ void Simulation::run(unsigned int days)
 		// Init the stats data struct for today
 		this->dayStats = this->statsManager.getDayStats(this->currentDay);
 
-		this->doConsumption();
+		ConsumptionSystem::doConsumption(consumption, this->agents, this->dayStats);
 
-		this->doProduction();
+		ProductionSystem::doProduction(jobs, this->agents, this->dayStats);
 
 		this->generateOffers();
 
@@ -63,70 +66,7 @@ unsigned int Simulation::getCurrentDay()
 
 StatsManager &Simulation::getStatsManager()
 {
-	return statsManager;
-}
-
-void Simulation::doProduction()
-{
-	// Variables
-	Job j;
-
-	for(Agent &a : this->agents){
-		// Get the agent's job
-		j = jobs[a.jobId];
-
-		// Check if inputs are present in agent's stockpile
-		for(int i = 0; i < MAX_GOODS; i++){
-			if(a.stockpile[i] < j.inputs[i]){
-				// If not enough inputs, continue to next agent
-				continue;
-			}
-		}
-
-		// Execute the production
-		for(int i = 0; i < MAX_GOODS; i++){
-			a.stockpile[i] -= j.inputs[i];
-			a.stockpile[i] += j.ouputs[i];
-
-			// Add quantity to stats
-			this->dayStats->quantityConsumed[i] += j.inputs[i];
-			this->dayStats->quantityProduced[i] += j.ouputs[i];
-		}
-	}
-}
-
-// Consumption works differently than production as consumption can be partly fulfilled
-// unlike the input requirements for a job. The proportion of fulfilled consumption
-// will be fed to the agent's learning algorithm.
-void Simulation::doConsumption()
-{
-	// Variables
-	unsigned int totalConsumption = 0;
-	unsigned int goodsConsumed = 0;
-	unsigned int limit = 0;
-
-	for(Agent &a : this->agents){
-		// Reset variables
-		totalConsumption = goodsConsumed = limit = 0;
-
-		// Calculate total consumption
-		for(int i = 0; i < MAX_GOODS; i++){
-			totalConsumption += consumption[i];
-		}
-
-		// Execute the consumption
-		for(int i = 0; i < MAX_GOODS; i++){
-			limit = std::min(a.stockpile[i], consumption[i]);
-			a.stockpile[i] -= limit;
-			goodsConsumed += limit;
-
-			// Add quantity to stats
-			this->dayStats->quantityConsumed[i] += limit;
-		}
-
-		// Set the agent's satisfaction
-		a.satisfaction = goodsConsumed/totalConsumption;
-	}
+	return this->statsManager;
 }
 
 void Simulation::generateOffers()
@@ -292,7 +232,7 @@ void Simulation::updateAgents()
 	}
 
 	// Get good that sold for the most yesterday
-	DayStats *d = this->statsManager.getDayStats(this->currentDay - 1);
+	DayStats<MAX_GOODS> *d = this->statsManager.getDayStats(this->currentDay - 1);
 	unsigned int mostProfitableGoodId = 0;
 	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
 		if(d->averagePrice[goodId] > d->averagePrice[mostProfitableGoodId]){
@@ -309,10 +249,10 @@ void Simulation::updateAgents()
 	}
 
 	// Execute job changing
-	for(Agent &a : this->agents){
-		if(a.satisfaction < SATISFACTION_THRESHOLD){
+	for(Agent<MAX_GOODS> &agent : this->agents){
+		if(agent.satisfaction < SATISFACTION_THRESHOLD){
 			// Change job
-			a.jobId = rand() % jobs.size();
+			agent.jobId = rand() % jobs.size();
 		}
 	}
 }

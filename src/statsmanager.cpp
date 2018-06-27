@@ -20,11 +20,11 @@ void StatsManager::init(unsigned int days)
 	// Initialize stats array
 	this->stats.reserve(days);
 	for(int i = 0; i < days; i++){
-		this->stats.push_back(DayStats());
+		this->stats.push_back(DayStats<MAX_GOODS>());
 	}
 }
 
-DayStats *StatsManager::getDayStats(int day)
+DayStats<MAX_GOODS> *StatsManager::getDayStats(int day)
 {
 	if(day < 0){
 		return &this->stats[0];
@@ -32,7 +32,6 @@ DayStats *StatsManager::getDayStats(int day)
 		return &this->stats[day];
 	}
 }
-
 
 unsigned int StatsManager::getSamplingInterval()
 {
@@ -46,7 +45,7 @@ void StatsManager::setSamplingInterval(unsigned int interval)
 
 void StatsManager::print(unsigned int day)
 {
-	DayStats *ds = &this->stats[day];
+	DayStats<MAX_GOODS> *ds = &this->stats[day];
 	printf("[Day %d]\n", day + 1);
 	printf("Good\tAsks\tBids\tFulfilled Asks (%)\tFulfilled Bids (%)\tMoney Traded\tAverage Price\n");
 	for(int goodId = 0; goodId < MAX_GOODS; goodId++){

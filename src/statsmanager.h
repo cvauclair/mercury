@@ -6,25 +6,7 @@
 
 #include "config.h"
 
-// Structure holding statistics for each day
-struct DayStats{
-	// Market offer stats
-	unsigned int asksNb[MAX_GOODS] = {0};
-	unsigned int bidsNb[MAX_GOODS] = {0};
-	unsigned int fulfilledAsksNb[MAX_GOODS] = {0};
-	unsigned int fulfilledBidsNb[MAX_GOODS] = {0};
-
-	// Goods stats
-	unsigned int quantityConsumed[MAX_GOODS] = {0};
-	unsigned int quantityProduced[MAX_GOODS] = {0};
-	unsigned int quantityTraded[MAX_GOODS] = {0};
-
-	// Price stats
-	float moneyTraded[MAX_GOODS] = {0};
-	float averagePrice[MAX_GOODS] = {0};
-};
-
-// Internal class of the simulation that collects stats for viewing
+// Class that collects data for viewing and analysis
 class StatsManager{
 	public:
 		StatsManager();
@@ -37,7 +19,7 @@ class StatsManager{
 		void init(unsigned int days);
 
 		// Get the stats data struct of a day
-		DayStats *getDayStats(int day);
+		DayStats<MAX_GOODS> *getDayStats(int day);
 
 		// Set/get sampling interval
 		unsigned int getSamplingInterval();
@@ -47,8 +29,9 @@ class StatsManager{
 		void print(unsigned int day);
 
 	private:
+		// Data
 		unsigned int samplingInterval = 5;	// Number of days between samples
-		std::vector<DayStats> stats;
+		std::vector<DayStats<MAX_GOODS>> stats;
 };
 
 #endif

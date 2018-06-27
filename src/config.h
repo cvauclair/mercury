@@ -6,6 +6,9 @@
 
 #include "definitions.h"
 
+// Number of goods in the simulation
+static const unsigned int MAX_GOODS = 6;
+
 // Names of the goods in the simulation with
 // The ID of a good is its index in that array (the names of the goods
 // are really only relevant to us humans, therefore they are stored in
@@ -35,7 +38,7 @@ static const std::array<std::string, MAX_GOODS> goods = {
 // quantities of goods.
 
 // Job definitions, again with the ID of a job being its index int the list
-static const std::vector<Job> jobs = {
+static const std::vector<Job<MAX_GOODS>> jobs = {
 	{	// Wood cutting: 1 Tool -> 4 Wood
 		"Wood Cutter", {0,0,1,0,0,0}, {4,0,0,0,0,0}
 	},
