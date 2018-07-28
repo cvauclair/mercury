@@ -10,18 +10,16 @@ Simulation::Simulation(unsigned int popSize, unsigned int goodsNb)
 
 	// Create agents and rotate the jobs they are given until popSize agents have been created,
 	// ensuring an even spread of jobs amongst agents at the start of the simulation
-	Agent<MAX_GOODS> agent;
-	for(int i = 0; i < popSize; i++){
-		// Init new agent
-		agent.balance = 10;
-		agent.jobId = jobId;
-		for(int i = 0; i < MAX_GOODS; i++) {agent.stockpile[i] = 1;}
-		agent.satisfaction = 1.0;
-		for(int i = 0; i < MAX_GOODS; i++) {agent.offerPrice[i] = 1.0;}
-		for(int i = 0; i < MAX_GOODS; i++) {agent.lastOfferFulfilled[i] = true;}
-
-		// Add new agent
-		this->agents.push_back(agent);
+	// Init agent database
+	this->agentManager.init(popSize, goodsNb);
+	for(int agentId = 0; agentId < popSize; agentId++){
+		// Init agent values
+		agentManager.setBalance(agentId, 10);
+		agentManager.setJobId(agentId, jobId);
+		for(int goodId = 0; goodId < goodsNb; goodId++){agentManager.setGoodStockpileQuantity(agentId, goodId, 1);}
+		agentManager.setSatisfaction(agentId, 1.0);
+		for(int goodId = 0; goodId < goodsNb; goodId++){agentManager.setGoodOfferPrice(agentId, goodId, 1.0);}
+		for(int goodId = 0; goodId < goodsNb; goodId++){agentManager.setGoodLastOfferFulfilled(agentId, goodId, true);}
 
 		// Increment job counter
 		jobId++;
@@ -47,7 +45,10 @@ void Simulation::run(unsigned int days)
 		// Init the stats data struct for today
 		this->dayStats = this->statsManager.getDayStats(this->currentDay);
 
-		ConsumptionSystem::doConsumption(consumption, this->agents, this->dayStats);
+		// Execute consumption
+		for(int agentId = 0; agentId < this->agentManager.getPopSize(); agentId++){
+//			ConsumptionSystem::doConsumption(consumption, this->agentManager.getStockpile(agentId), this->agentManager.getSatisfaction(agentId));
+		}
 
 		ProductionSystem::doProduction(jobs, this->agents, this->dayStats);
 

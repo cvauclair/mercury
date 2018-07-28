@@ -13,7 +13,7 @@ set(simulationSRCS
 set(testSRCS
 	test/test.cpp
 	test/agentmanagertests.cpp
-#	test/consumptionsystemtests.cpp
+	test/consumptionsystemtests.cpp
 #	test/productionsystemtests.cpp
 )
 
