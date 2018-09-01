@@ -19,7 +19,7 @@ static const std::array<std::string, MAX_GOODS> goods = {
 	"Wood",
 	"Food",
 	"Tool",
-	"Iron Ore",
+	"IronOre",
 	"Coal",
 	"Iron",
 };

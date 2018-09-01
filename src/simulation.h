@@ -13,7 +13,6 @@
 #include "consumptionsystem.h"
 #include "productionsystem.h"
 
-#include "agentmanager.h"
 
 // Simulation flow:
 //	for each timestep
@@ -52,8 +51,6 @@ class Simulation{
 		unsigned int currentDay = 0;
 
 		// Simulation databases
-		AgentManager agentManager;
-
 		std::vector<Agent<MAX_GOODS>> agents;
 		std::array<std::vector<Offer>, MAX_GOODS> asks;
 		std::array<std::vector<Offer>, MAX_GOODS> bids;

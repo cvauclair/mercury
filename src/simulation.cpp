@@ -170,7 +170,7 @@ void Simulation::resolveOffers()
 			if(quantityTraded > 0){
 				// Update offers
 				(*ask).quantity -= quantityTraded;
-				(*bid).quantity += quantityTraded;
+				(*bid).quantity -= quantityTraded;
 //				std::cout << "Offer resolved: " << quantityTraded << " goods traded for " << clearingPrice << "$/unit" << std::endl;
 
 				// Transfer quantityTraded of good from seller agent to buyer agent
@@ -190,7 +190,7 @@ void Simulation::resolveOffers()
 			// Remove ask from list if seller has sold he wanted inventory
 			if((*ask).quantity == 0){
 				(*ask).fulfilled = true;
-				std:advance(ask,1);
+				std::advance(ask,1);
 			}
 
 			// Remove bid from list if buyer has gotten all he wanted
@@ -210,11 +210,11 @@ void Simulation::resolveOffers()
 		}
 	}
 
-	// Clear offers
-	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-		this->asks[goodId].clear();
-		this->bids[goodId].clear();
-	}
+//	// Clear offers
+//	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
+//		this->asks[goodId].clear();
+//		this->bids[goodId].clear();
+//	}
 }
 
 void Simulation::updateAgents()
@@ -223,12 +223,25 @@ void Simulation::updateAgents()
 	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
 		// Update asks
 		for(Offer &ask : this->asks[goodId]){
+			if(!ask.fulfilled){
+				// Reduce price by price change factor
+				this->agents[ask.agentId].offerPrice[goodId] *= 1.0 - PRICE_CHANGE_FACTOR;
+			}
 			this->agents[ask.agentId].lastOfferFulfilled[goodId] = ask.fulfilled;
 		}
 		// Update bids
 		for(Offer &bid : this->bids[goodId]){
+			if(!bid.fulfilled){
+				// Increase price by price change factor
+				this->agents[bid.agentId].offerPrice[goodId] *= 1.0 + PRICE_CHANGE_FACTOR;
+			}
 			this->agents[bid.agentId].lastOfferFulfilled[goodId] = bid.fulfilled;
 		}
+	}
+	// Clear offers
+	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
+		this->asks[goodId].clear();
+		this->bids[goodId].clear();
 	}
 
 	// Get good that sold for the most yesterday

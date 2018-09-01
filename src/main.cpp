@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
 	Simulation sim(20, 4);
 	StatsManager &sManager = sim.getStatsManager();
 
-	unsigned int days = 40;
+	unsigned int days = 80;
 
 	sim.run(days);
 

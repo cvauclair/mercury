@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(simulation)
 
 set(simulationSRCS
-	src/agentmanager.cpp
+#	src/agentmanager.cpp
 	src/consumptionsystem.cpp
 	src/productionsystem.cpp
 	src/simulation.cpp
@@ -12,7 +12,7 @@ set(simulationSRCS
 
 set(testSRCS
 	test/test.cpp
-	test/agentmanagertests.cpp
+#	test/agentmanagertests.cpp
 #	test/consumptionsystemtests.cpp
 #	test/productionsystemtests.cpp
 )
