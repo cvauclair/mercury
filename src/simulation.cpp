@@ -11,14 +11,14 @@ Simulation::Simulation(unsigned int popSize, unsigned int goodsNb)
 	// Create agents and rotate the jobs they are given until popSize agents have been created,
 	// ensuring an even spread of jobs amongst agents at the start of the simulation
 	Agent<MAX_GOODS> agent;
-	for(int i = 0; i < popSize; i++){
+	for(unsigned int i = 0; i < popSize; i++){
 		// Init new agent
 		agent.balance = 10;
 		agent.jobId = jobId;
-		for(int i = 0; i < MAX_GOODS; i++) {agent.stockpile[i] = 1;}
+		for(unsigned int i = 0; i < MAX_GOODS; i++) {agent.stockpile[i] = 1;}
 		agent.satisfaction = 1.0;
-		for(int i = 0; i < MAX_GOODS; i++) {agent.offerPrice[i] = 1.0;}
-		for(int i = 0; i < MAX_GOODS; i++) {agent.lastOfferFulfilled[i] = true;}
+		for(unsigned int i = 0; i < MAX_GOODS; i++) {agent.offerPrice[i] = 1.0;}
+		for(unsigned int i = 0; i < MAX_GOODS; i++) {agent.lastOfferFulfilled[i] = true;}
 
 		// Add new agent
 		this->agents.push_back(agent);
@@ -209,12 +209,6 @@ void Simulation::resolveOffers()
 			this->dayStats->averagePrice[goodId] = this->dayStats->moneyTraded[goodId]/this->dayStats->quantityTraded[goodId];
 		}
 	}
-
-//	// Clear offers
-//	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-//		this->asks[goodId].clear();
-//		this->bids[goodId].clear();
-//	}
 }
 
 void Simulation::updateAgents()
@@ -238,6 +232,7 @@ void Simulation::updateAgents()
 			this->agents[bid.agentId].lastOfferFulfilled[goodId] = bid.fulfilled;
 		}
 	}
+
 	// Clear offers
 	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
 		this->asks[goodId].clear();
