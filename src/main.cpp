@@ -17,5 +17,7 @@ int main(int argc, char *argv[]){
 		sManager.print(i);
 	}
 
+	sManager.exportStats("stats.csv");
+
 	return 0;
 }

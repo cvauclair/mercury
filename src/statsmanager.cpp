@@ -10,9 +10,96 @@ StatsManager::~StatsManager()
 
 }
 
-void StatsManager::exportStats(const std::__cxx11::string &filename)
+void StatsManager::exportStats(const std::string &filename)
 {
-	// TODO
+	// Open file
+	std::ofstream file;
+	file.open(filename);
+
+	unsigned int goodId = 0;	// Init variable for reuse in loops
+
+	// Write column labels
+
+	// Write asks and bids labels
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "asks,";
+	}
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "bids,";
+	}
+
+	// Write fulfilled asks and bids labels
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "fulfilledasks,";
+	}
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "fulfilledbids,";
+	}
+
+	// Write qty consumed, produced and traded labels
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "qtyconsumed,";
+	}
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "qtyproduced,";
+	}
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "qtytraded,";
+	}
+
+	// Write money traded and average price labels
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "moneytraded,";
+	}
+	for(goodId = 0; goodId < MAX_GOODS; goodId++){
+		file << "good" << goodId << "avgprice,";
+	}
+
+	// Newline
+	file << std::endl;
+
+	// Write actual data
+	for(unsigned int day = 0; day < stats.size(); day++){
+		// Write asks and bids
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].asksNb[goodId] << ",";
+		}
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].bidsNb[goodId] << ",";
+		}
+
+		// Write fulfilled asks and bids
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].fulfilledAsksNb[goodId] << ",";
+		}
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].fulfilledBidsNb[goodId] << ",";
+		}
+
+		// Write qty consumed, produced and traded
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].quantityConsumed[goodId] << ",";
+		}
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].quantityProduced[goodId] << ",";
+		}
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].quantityTraded[goodId] << ",";
+		}
+
+		// Write money traded and average price
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].moneyTraded[goodId] << ",";
+		}
+		for(goodId = 0; goodId < MAX_GOODS; goodId++){
+			file << this->stats[day].averagePrice[goodId] << ",";
+		}
+
+		// Newline
+		file << std::endl;
+	}
+
+	file.close();
 }
 
 void StatsManager::init(unsigned int days)

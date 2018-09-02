@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(simulation)
+project(mercury)
 
 set(simulationSRCS
 #	src/agentmanager.cpp

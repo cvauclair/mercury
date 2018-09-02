@@ -74,4 +74,8 @@ Thumbs.db
 # Build directory
 build/
 
+# Ignore qtcreator file
 CMakeLists.txt.user
+
+# Ignore .csv data files
+*.csv
