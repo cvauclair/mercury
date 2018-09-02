@@ -1,23 +1,15 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "simulation.h"
+#include "simulationmanager.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]){
-	Simulation sim(20, 4);
-	StatsManager &sManager = sim.getStatsManager();
+	SimulationManager simulationManager;
 
-	unsigned int days = 80;
-
-	sim.run(days);
-
-	for(int i = 0; i < days; i++){
-		sManager.print(i);
-	}
-
-	sManager.exportStats("stats.csv");
+	simulationManager.init(30);
+	simulationManager.run(80);
 
 	return 0;
 }

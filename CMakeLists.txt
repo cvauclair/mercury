@@ -5,8 +5,10 @@ project(mercury)
 set(simulationSRCS
 #	src/agentmanager.cpp
 	src/consumptionsystem.cpp
+	src/marketsystem.cpp
 	src/productionsystem.cpp
 	src/simulation.cpp
+	src/simulationmanager.cpp
 	src/statsmanager.cpp
 )
 

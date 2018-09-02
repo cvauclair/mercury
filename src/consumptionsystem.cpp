@@ -44,3 +44,34 @@ void ConsumptionSystem::doConsumption(const std::array<char, MAX_GOODS> &consump
 		agent.satisfaction = goodsConsumed/totalConsumption;
 	}
 }
+
+void ConsumptionSystem::doConsumption(Simulation &simulation)
+{
+	// Variables
+	unsigned int totalConsumption = 0;
+	unsigned int goodsConsumed = 0;
+	unsigned int limit = 0;
+
+	for(Agent<MAX_GOODS> &agent : simulation.agents){
+		// Reset variables
+		totalConsumption = goodsConsumed = limit = 0;
+
+		// Calculate total consumption
+		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+			totalConsumption += consumption[goodId];
+		}
+
+		// Execute the consumption
+		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+			limit = std::min(agent.stockpile[goodId], consumption[goodId]);
+			agent.stockpile[goodId] -= limit;
+			goodsConsumed += limit;
+
+			simulation.quantityConsumed[goodId] += limit;
+		}
+
+		// Set the agent's satisfaction
+		agent.satisfaction = goodsConsumed/totalConsumption;
+	}
+
+}

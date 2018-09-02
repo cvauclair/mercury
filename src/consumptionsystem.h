@@ -6,9 +6,12 @@
 #include "definitions.h"
 #include "statsmanager.h"
 
+#include "simulation.h"
+
 class ConsumptionSystem{
 	public:
 		static void doConsumption(const std::array<char, MAX_GOODS> &consumption, std::vector<Agent<MAX_GOODS>> &agents, DayStats<MAX_GOODS> *dayStats);
+		static void doConsumption(Simulation &simulation);
 };
 
 #endif

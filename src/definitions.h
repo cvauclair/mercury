@@ -49,6 +49,7 @@ struct DayStats{
 	unsigned int quantityConsumed[MAX_GOODS] = {0};
 	unsigned int quantityProduced[MAX_GOODS] = {0};
 	unsigned int quantityTraded[MAX_GOODS] = {0};
+	unsigned int totalSupply[MAX_GOODS] = {0};
 
 	// Price stats
 	float moneyTraded[MAX_GOODS] = {0};
