@@ -2,16 +2,16 @@
 #define SIMULATION_H
 
 #include <vector>
-#include <algorithm>
-#include <stdlib.h>
-#include <time.h>
 
 #include "definitions.h"
 #include "config.h"
 
+// Simulation state
 struct Simulation{
-	// Simulation state
+	// Agents
 	std::vector<Agent<MAX_GOODS>> agents;
+
+	// Market
 	std::array<std::vector<Offer>, MAX_GOODS> asks;
 	std::array<std::vector<Offer>, MAX_GOODS> bids;
 	std::array<unsigned int, MAX_GOODS> quantityConsumed;
