@@ -1,6 +1,8 @@
 #ifndef MARKETSYSTEM_H
 #define MARKETSYSTEM_H
 
+#include <algorithm>
+
 #include "simulation.h"
 
 class MarketSystem{

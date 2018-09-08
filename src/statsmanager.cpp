@@ -20,6 +20,9 @@ void StatsManager::exportStats(const std::string &filename)
 
 	// Write column labels
 
+	// Write day label
+	file << "day,";
+
 	// Write total supply labels
 	for(goodId = 0; goodId < MAX_GOODS; goodId++){
 		file << "good" << goodId << "supply,";
@@ -65,6 +68,9 @@ void StatsManager::exportStats(const std::string &filename)
 
 	// Write actual data
 	for(unsigned int day = 0; day < stats.size(); day++){
+		// Write day
+		file << day << ",";
+
 		// Write total supply labels
 		for(goodId = 0; goodId < MAX_GOODS; goodId++){
 			file << this->stats[day].totalSupply[goodId] << ",";
