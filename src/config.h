@@ -65,7 +65,7 @@ static const std::vector<Job<MAX_GOODS>> jobs = {
 // We reasonably assume that all agents share the same daily consumption (e.g.: all agents
 // have equal metabolism) which greatly reduces memory usage and for the time being,
 // doesn't critically impact the complexity of the simulation).
-static const std::array<char, MAX_GOODS> consumption = {3,0,0,0,0,0};
+static const std::array<char, MAX_GOODS> consumption = {0,1,0,0,0,0};
 
 // Price change factor
 // How much the agents will adjust their offer prices by if the offers are unfulfilled
