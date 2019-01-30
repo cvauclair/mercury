@@ -5,17 +5,23 @@ void ProductionSystem::doProduction(Simulation &simulation)
 {
 	// Variables
 	Job<MAX_GOODS> job;
+	bool doProduction = true;
 
 	for(Agent<MAX_GOODS> &agent : simulation.agents){
 		// Get the agent's job
 		job = jobs[agent.jobId];
 
 		// Check if inputs are present in agent's stockpile
+		doProduction = true;
 		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
 			if(agent.stockpile[goodId] < job.inputs[goodId]){
 				// If not enough inputs, continue to next agent
-				continue;
+				doProduction = false;
+				break;
 			}
+		}
+		if(!doProduction){
+			continue;
 		}
 
 		// Execute the production

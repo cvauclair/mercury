@@ -39,6 +39,13 @@ def load_goods_data(goods_data_filename):
 	
 	return goods_data
 
+def add_subplot(subplot_id, name, data_label):
+	plt.subplot(subplot_id)
+	plt.ylabel(name)
+	for goods_name in goods_names:
+		plt.plot(goods_data[goods_name].index.values, goods_data[goods_name][data_label], label=goods_name)
+	plt.legend()
+
 # Check for stat file
 if len(sys.argv) == 2:
 	goods_data_filename = sys.argv[1]
@@ -51,53 +58,19 @@ goods_data = load_goods_data(goods_data_filename)
 
 plt.figure(1)
 # Plot goods supply
-plt.subplot(231)
-plt.ylabel('Supply')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].supply, label=goods_name)
-plt.legend()
+add_subplot(331, 'Supply', 'supply')
+add_subplot(332, 'Asks', 'asks')
+add_subplot(333, 'Bids', 'bids')
 
-# Plot goods average price
-plt.subplot(232)
-plt.ylabel('Average price')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].average_price, label=goods_name)
-plt.legend()
+add_subplot(334, 'Average price', 'average_price')
+add_subplot(335, 'Fulfilled asks', 'fulfilled_asks')
+add_subplot(336, 'Fulfilled bids', 'fulfilled_bids')
 
-# Plot goods asks
-plt.subplot(233)
-plt.ylabel('Asks')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].asks, label=goods_name)
-plt.legend()
+add_subplot(337, 'Quantity produced', 'quantity_produced')
+add_subplot(338, 'Quantity consumed', 'quantity_consumed')
+add_subplot(339, 'Quantity traded', 'quantity_traded')
 
-# Plot goods bids
-#plt.subplot(234)
-#plt.ylabel('Bids')
-#for goods_name in goods_names:
-#	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].bids, label=goods_name)
-#plt.legend()
 
-# Plot goods quantity produced
-plt.subplot(2,3,4)
-plt.ylabel('Quantity produced')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].quantity_produced, label=goods_name)
-plt.legend()
-
-# Plot goods quantity consumed
-plt.subplot(2,3,5)
-plt.ylabel('Quantity consumed')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].quantity_consumed, label=goods_name)
-plt.legend()
-
-# Plot goods quantity traded
-plt.subplot(2,3,6)
-plt.ylabel('Quantity traded')
-for goods_name in goods_names:
-	plt.plot(goods_data[goods_name].index.values, goods_data[goods_name].quantity_traded, label=goods_name)
-plt.legend()
 
 # Show
 figManager = plt.get_current_fig_manager()

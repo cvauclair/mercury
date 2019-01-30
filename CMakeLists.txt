@@ -23,7 +23,7 @@ set(simSRCS
 	src/main.cpp
 )
 
-include_directories(src include)
+include_directories(src include src/vizualizer)
 
 add_library(simulation SHARED ${simulationSRCS})
 
