@@ -147,7 +147,7 @@ void StatsManager::compileDailyStats(Simulation &simulation)
 	getAveragePrice(simulation, dayStats);
 
 	// Compile agent stats
-
+	getJobDistribution(simulation, dayStats);
 
 	// Add the newly compiled stats to the database
 	this->stats.push_back(dayStats);
