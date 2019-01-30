@@ -23,11 +23,12 @@ struct Goods{
 };
 
 struct Job{
+	Job(){}
 	Job(unsigned int id, std::string name): id(id), name(name) {}
 	unsigned int id = 0;
 	std::string name = "";
-	std::vector<std::pair<unsigned int, unsigned int>> inputs;
-	std::vector<std::pair<unsigned int, unsigned int>> outputs;
+	std::vector<std::pair<std::string, unsigned int>> inputs;
+	std::vector<std::pair<std::string, unsigned int>> outputs;
 };
 
 class ConfigLoader{
@@ -38,7 +39,7 @@ class ConfigLoader{
 		void loadConfig();
 
 		static std::vector<Goods> loadGoodsConfig(const char *filename);
-		static void loadJobsConfig(const char *filename);
+		static std::vector<Job> loadJobsConfig(const char *filename);
 
 	private:
 

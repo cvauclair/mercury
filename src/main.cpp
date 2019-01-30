@@ -8,7 +8,11 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 	ConfigLoader configLoader;
-	configLoader.loadConfig();
+	try {
+		configLoader.loadConfig();
+	} catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}
 
 	//	SimulationManager simulationManager;
 
