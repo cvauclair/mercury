@@ -54,6 +54,10 @@ struct DayStats{
 	// Price stats
 	float moneyTraded[MAX_GOODS] = {0};
 	float averagePrice[MAX_GOODS] = {0};
+
+	// Agent stats
+	// TODO: CHANGE THIS TO VARIABLE JOB NUMBER!!!
+	unsigned int jobDistribution[6] = {0};
 };
 
 #endif

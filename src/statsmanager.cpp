@@ -63,6 +63,11 @@ void StatsManager::exportStats(const std::string &filename)
 		file << "good" << goodId << "avgprice,";
 	}
 
+	// Write job ids
+	for(unsigned int jobId = 0; jobId < jobs.size(); jobId++){
+		file << "job" << jobId << ",";
+	}
+
 	// Newline
 	file << std::endl;
 
@@ -111,6 +116,12 @@ void StatsManager::exportStats(const std::string &filename)
 			file << this->stats[day].averagePrice[goodId] << ",";
 		}
 
+		// Write agent stats
+		// Write agent job distribution
+		for(unsigned int jobId = 0; jobId < jobs.size(); jobId++){
+			file << this->stats[day].jobDistribution[jobId] << ",";
+		}
+
 		// Newline
 		file << std::endl;
 	}
@@ -123,7 +134,7 @@ void StatsManager::compileDailyStats(Simulation &simulation)
 	// Init new day stats
 	DayStats<MAX_GOODS> dayStats;
 
-	// Compile each individual stat
+	// Compile goods stats
 	getAsksNb(simulation, dayStats);
 	getBidsNb(simulation, dayStats);
 	getFulfilledAsksNb(simulation, dayStats);
@@ -134,6 +145,9 @@ void StatsManager::compileDailyStats(Simulation &simulation)
 	getQuantityTraded(simulation, dayStats);
 	getMoneyTraded(simulation, dayStats);
 	getAveragePrice(simulation, dayStats);
+
+	// Compile agent stats
+
 
 	// Add the newly compiled stats to the database
 	this->stats.push_back(dayStats);
@@ -230,6 +244,13 @@ void StatsManager::getAveragePrice(Simulation &simulation, DayStats<MAX_GOODS> &
 				dayStats.averagePrice[goodId] = 0;
 			}
 		}
+	}
+}
+
+void StatsManager::getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
+{
+	for(Agent<MAX_GOODS> &agent : simulation.agents) {
+		dayStats.jobDistribution[agent.jobId]++;
 	}
 }
 

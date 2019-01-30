@@ -23,6 +23,7 @@ class StatsManager{
 		void compileDailyStats(Simulation &simulation);
 
 		// These methods split up the data compilation process and saves the data in dayStats
+		// Goods stats methods
 		void getAsksNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 		void getBidsNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 		void getFulfilledAsksNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
@@ -33,6 +34,9 @@ class StatsManager{
 		void getQuantityTraded(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 		void getMoneyTraded(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 		void getAveragePrice(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
+
+		// Agent stats methods
+		void getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 
 		// Get the stats data struct of a day
 		DayStats<MAX_GOODS> *getDayStats(int day);
