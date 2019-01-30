@@ -37,6 +37,11 @@ class StatsManager{
 
 		// Agent stats methods
 		void getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
+		// IMPORTANT NOTE: The two methods below assume that job distribution was already
+		// calculated in current day stats so as to not recalculate the same thing (i.e.:
+		// number of agent per job)
+		void getAverageSatisfaction(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
+		void getAverageBalance(Simulation &simulation, DayStats<MAX_GOODS> &dayStats);
 
 		// Get the stats data struct of a day
 		DayStats<MAX_GOODS> *getDayStats(int day);

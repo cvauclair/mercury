@@ -58,6 +58,10 @@ struct DayStats{
 	// Agent stats
 	// TODO: CHANGE THIS TO VARIABLE JOB NUMBER!!!
 	unsigned int jobDistribution[6] = {0};
+
+	// Stats below are per job type
+	float averageSatisfaction[6] = {0.0f};
+	float averageBalance[6] = {0.0f};
 };
 
 #endif

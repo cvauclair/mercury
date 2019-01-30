@@ -17,6 +17,7 @@ void StatsManager::exportStats(const std::string &filename)
 	file.open(filename);
 
 	unsigned int goodId = 0;	// Init variable for reuse in loops
+	unsigned int jobId = 0;
 
 	// Write column labels
 
@@ -63,9 +64,15 @@ void StatsManager::exportStats(const std::string &filename)
 		file << "good" << goodId << "avgprice,";
 	}
 
-	// Write job ids
-	for(unsigned int jobId = 0; jobId < jobs.size(); jobId++){
+	// Write job stat labels
+	for(jobId = 0; jobId < jobs.size(); jobId++){
 		file << "job" << jobId << ",";
+	}
+	for(jobId = 0; jobId < jobs.size(); jobId++){
+		file << "job" << jobId << "sat,";
+	}
+	for(jobId = 0; jobId < jobs.size(); jobId++){
+		file << "job" << jobId << "bal,";
 	}
 
 	// Newline
@@ -118,8 +125,16 @@ void StatsManager::exportStats(const std::string &filename)
 
 		// Write agent stats
 		// Write agent job distribution
-		for(unsigned int jobId = 0; jobId < jobs.size(); jobId++){
+		for(jobId = 0; jobId < jobs.size(); jobId++){
 			file << this->stats[day].jobDistribution[jobId] << ",";
+		}
+
+		// Write agent average stats per job
+		for(jobId = 0; jobId < jobs.size(); jobId++){
+			file << this->stats[day].averageSatisfaction[jobId] << ",";
+		}
+		for(jobId = 0; jobId < jobs.size(); jobId++){
+			file << this->stats[day].averageBalance[jobId] << ",";
 		}
 
 		// Newline
@@ -148,6 +163,8 @@ void StatsManager::compileDailyStats(Simulation &simulation)
 
 	// Compile agent stats
 	getJobDistribution(simulation, dayStats);
+	getAverageSatisfaction(simulation, dayStats);
+	getAverageBalance(simulation, dayStats);
 
 	// Add the newly compiled stats to the database
 	this->stats.push_back(dayStats);
@@ -251,6 +268,32 @@ void StatsManager::getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS
 {
 	for(Agent<MAX_GOODS> &agent : simulation.agents) {
 		dayStats.jobDistribution[agent.jobId]++;
+	}
+}
+
+void StatsManager::getAverageSatisfaction(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
+{
+	std::array<float, 6> totalSatisfaction;
+	for(Agent<MAX_GOODS> &agent : simulation.agents) {
+		totalSatisfaction[agent.jobId] += agent.satisfaction;
+	}
+
+	// Divide by number of agents per job
+	for(unsigned int i = 0; i < totalSatisfaction.size(); i++){
+		dayStats.averageSatisfaction[i] = totalSatisfaction[i]/dayStats.jobDistribution[i];
+	}
+}
+
+void StatsManager::getAverageBalance(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
+{
+	std::array<float, 6> totalBalance;
+	for(Agent<MAX_GOODS> &agent : simulation.agents) {
+		totalBalance[agent.jobId] += agent.balance;
+	}
+
+	// Divide by number of agents per job
+	for(unsigned int i = 0; i < totalBalance.size(); i++){
+		dayStats.averageBalance[i] = totalBalance[i]/dayStats.jobDistribution[i];
 	}
 }
 
