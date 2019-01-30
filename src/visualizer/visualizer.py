@@ -37,7 +37,9 @@ job_names = [
 ]
 
 job_stats = [
-	"number"
+	"number",
+	"average_satisfaction",
+	"average_balance"
 ]
 
 def load_goods_data(data_filename):
@@ -103,7 +105,9 @@ figManager.window.showMaximized()
 # Plot jobs data
 plt.figure(2)
 
-add_subplot(111, 'Job', 'number', jobs_data)
+add_subplot(131, 'Job', 'number', jobs_data)
+add_subplot(132, 'Average satisfaction', 'average_satisfaction', jobs_data)
+add_subplot(133, 'Average balance', 'average_balance', jobs_data)
 
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()

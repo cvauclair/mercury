@@ -273,7 +273,7 @@ void StatsManager::getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS
 
 void StatsManager::getAverageSatisfaction(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
 {
-	std::array<float, 6> totalSatisfaction;
+	std::array<float, 6> totalSatisfaction = {0.0f};
 	for(Agent<MAX_GOODS> &agent : simulation.agents) {
 		totalSatisfaction[agent.jobId] += agent.satisfaction;
 	}
@@ -286,7 +286,7 @@ void StatsManager::getAverageSatisfaction(Simulation &simulation, DayStats<MAX_G
 
 void StatsManager::getAverageBalance(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
 {
-	std::array<float, 6> totalBalance;
+	std::array<float, 6> totalBalance = {0.0f};
 	for(Agent<MAX_GOODS> &agent : simulation.agents) {
 		totalBalance[agent.jobId] += agent.balance;
 	}
