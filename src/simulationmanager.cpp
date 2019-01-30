@@ -101,27 +101,35 @@ void SimulationManager::updateAgents()
 	}
 
 	// Get good that sold for the most yesterday
-//	DayStats<MAX_GOODS> *d = this->statsManager.getDayStats(this->currentDay - 1);
-//	unsigned int mostProfitableGoodId = 0;
-//	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-//		if(d->averagePrice[goodId] > d->averagePrice[mostProfitableGoodId]){
-//			mostProfitableGoodId = goodId;
-//		}
-//	}
+	unsigned int mostProfitableGoodId;
+	try {
+		mostProfitableGoodId = this->statsManager.getMostProfitableGood();
+	} catch (std::exception &e) {
+		// Do not do any jo changing
+		return;
+	}
 
 	// Find the job(s) that produce that most profitable good
-//	std::vector<unsigned int> mostProfitableJobIds;
-//	for(int jobId = 0; jobId < jobs.size(); jobId++){
-//		if(jobs[jobId].ouputs[mostProfitableGoodId] > 0){
-//			mostProfitableJobIds.push_back(jobId);
+	std::vector<unsigned int> mostProfitableJobIds;
+	for(int jobId = 0; jobId < jobs.size(); jobId++){
+		if(jobs[jobId].ouputs[mostProfitableGoodId] > 0){
+			mostProfitableJobIds.push_back(jobId);
+		}
+	}
+
+	// Execute random job changing
+//	for(Agent<MAX_GOODS> &agent : this->simulation.agents){
+//		if(agent.satisfaction < SATISFACTION_THRESHOLD){
+//			// Change job
+//			agent.jobId = rand() % jobs.size();
 //		}
 //	}
 
-	// Execute job changing
+	// Execute smart job changing
 	for(Agent<MAX_GOODS> &agent : this->simulation.agents){
 		if(agent.satisfaction < SATISFACTION_THRESHOLD){
 			// Change job
-			agent.jobId = rand() % jobs.size();
+			agent.jobId = mostProfitableJobIds.back();
 		}
 	}
 }

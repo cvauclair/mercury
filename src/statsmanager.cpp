@@ -306,6 +306,27 @@ DayStats<MAX_GOODS> *StatsManager::getDayStats(int day)
 	}
 }
 
+DayStats<MAX_GOODS> StatsManager::getLastDayStats()
+{
+	if(this->stats.empty()){
+		throw std::out_of_range("Stats is empty!");
+	}else{
+		return this->stats.back();
+	}
+}
+
+unsigned int StatsManager::getMostProfitableGood()
+{
+	unsigned int mostProfitableGoodId = 0;
+	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
+		if(this->getLastDayStats().averagePrice[goodId] > this->getLastDayStats().averagePrice[mostProfitableGoodId]){
+			mostProfitableGoodId = goodId;
+		}
+	}
+
+	return mostProfitableGoodId;
+}
+
 unsigned int StatsManager::getSamplingInterval()
 {
 	return samplingInterval;

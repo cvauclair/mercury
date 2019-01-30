@@ -45,6 +45,10 @@ class StatsManager{
 
 		// Get the stats data struct of a day
 		DayStats<MAX_GOODS> *getDayStats(int day);
+		DayStats<MAX_GOODS> getLastDayStats();
+
+		// Get some stats
+		unsigned int getMostProfitableGood();
 
 		// Set/get sampling interval
 		unsigned int getSamplingInterval();
