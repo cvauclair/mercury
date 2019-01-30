@@ -27,9 +27,22 @@ goods_stats = [
 	"average_price"
 ]
 
-def load_goods_data(goods_data_filename):
+job_names = [
+	"wood_cutter",
+	"farmer",
+	"toolmaker",
+	"iron_miner",
+	"coal_miner",
+	"iron_smelter"
+]
+
+job_stats = [
+	"number"
+]
+
+def load_goods_data(data_filename):
 	# Read raw data
-	raw_data = pd.read_csv(goods_data_filename)
+	raw_data = pd.read_csv(data_filename)
 
 	# Load goods stats
 	goods_data = {}
@@ -39,41 +52,62 @@ def load_goods_data(goods_data_filename):
 	
 	return goods_data
 
-def add_subplot(subplot_id, name, data_label):
+def load_jobs_data(data_filename):
+	# Read raw data
+	raw_data = pd.read_csv(data_filename)
+
+	# Load jobs stats
+	jobs_data = {}
+	for i, job_name in enumerate(job_names):
+		jobs_data[job_name] = raw_data.filter(like="job{}".format(i), axis=1)
+		jobs_data[job_name].columns = job_stats
+	
+	return jobs_data
+
+def add_subplot(subplot_id, name, data_label, data):
 	plt.subplot(subplot_id)
 	plt.ylabel(name)
-	for goods_name in goods_names:
-		plt.plot(goods_data[goods_name].index.values, goods_data[goods_name][data_label], label=goods_name)
+	for key in data.keys():
+		plt.plot(data[key].index.values, data[key][data_label], label=key)
 	plt.legend()
 
 # Check for stat file
 if len(sys.argv) == 2:
-	goods_data_filename = sys.argv[1]
+	data_filename = sys.argv[1]
 else:
-	print("Usage: {} <goods data csv file>".format(sys.argv[0]))
+	print("Usage: {} <data csv file>".format(sys.argv[0]))
 	sys.exit()
 
-# Read goods data
-goods_data = load_goods_data(goods_data_filename)
+# Read data
+goods_data = load_goods_data(data_filename)
+jobs_data = load_jobs_data(data_filename)
 
+# Plot goods data
 plt.figure(1)
-# Plot goods supply
-add_subplot(331, 'Supply', 'supply')
-add_subplot(332, 'Asks', 'asks')
-add_subplot(333, 'Bids', 'bids')
 
-add_subplot(334, 'Average price', 'average_price')
-add_subplot(335, 'Fulfilled asks', 'fulfilled_asks')
-add_subplot(336, 'Fulfilled bids', 'fulfilled_bids')
+add_subplot(331, 'Supply', 'supply', goods_data)
+add_subplot(332, 'Asks', 'asks', goods_data)
+add_subplot(333, 'Bids', 'bids', goods_data)
 
-add_subplot(337, 'Quantity produced', 'quantity_produced')
-add_subplot(338, 'Quantity consumed', 'quantity_consumed')
-add_subplot(339, 'Quantity traded', 'quantity_traded')
+add_subplot(334, 'Average price', 'average_price', goods_data)
+add_subplot(335, 'Fulfilled asks', 'fulfilled_asks', goods_data)
+add_subplot(336, 'Fulfilled bids', 'fulfilled_bids', goods_data)
 
+add_subplot(337, 'Quantity produced', 'quantity_produced', goods_data)
+add_subplot(338, 'Quantity consumed', 'quantity_consumed', goods_data)
+add_subplot(339, 'Quantity traded', 'quantity_traded', goods_data)
 
-
-# Show
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()
+
+# Plot jobs data
+plt.figure(2)
+
+add_subplot(111, 'Job', 'number', jobs_data)
+
+figManager = plt.get_current_fig_manager()
+figManager.window.showMaximized()
+
+# Show
 plt.show()
 
