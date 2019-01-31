@@ -15,7 +15,6 @@ void ConfigLoader::loadConfig()
 	std::vector<Goods> goodsData = ConfigLoader::loadGoodsConfig("/home/christophe/Documents/Programming/mercury/config/goods.lua");
 	for(Goods goods : goodsData){
 		std::cout << "Loaded goods " << goods.key << std::endl;
-//		std::cout << "Loaded goods [" << goods.key << "]" << std::endl;
 	}
 
 	std::vector<Job> jobsData = ConfigLoader::loadJobsConfig("/home/christophe/Documents/Programming/mercury/config/jobs.lua");
@@ -83,6 +82,8 @@ std::vector<Job> ConfigLoader::loadJobsConfig(const char *filename)
 			job.outputs.push_back(std::pair<std::string, unsigned int>(jobsRef[i+1]["outputs"][j+1]["key"].cast<std::string>(),
 					jobsRef[i+1]["outputs"][j+1]["quantity"].cast<unsigned int>()));
 		}
+
+		// Add job
 		jobs.push_back(job);
 	}
 
