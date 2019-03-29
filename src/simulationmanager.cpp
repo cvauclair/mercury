@@ -18,14 +18,11 @@ void SimulationManager::init(unsigned int popSize)
 		this->simulation.goodsIds[this->simulation.goods[goodsId].key] = goodsId;
 	}
 
-	this->simulation.numGoods = simulation.goods.size();
-
 	this->simulation.jobs = ConfigLoader::loadJobsConfig("/home/christophe/Documents/Programming/mercury/config/jobs.lua");
 	for(unsigned int jobId = 0; jobId < this->simulation.jobs.size(); jobId++){
 		this->simulation.jobsIds[this->simulation.jobs[jobId].key] = jobId;
 	}
 
-	unsigned int numJobs = this->simulation.jobs.size();
 	unsigned int jobId = 0;
 
 	// Create agents and rotate the jobs they are given until popSize agents have been created,
@@ -35,17 +32,17 @@ void SimulationManager::init(unsigned int popSize)
 		// Init new agent
 		agent.balance = 10;
 		agent.jobId = jobId;
-		for(unsigned int i = 0; i < simulation.numGoods; i++) {agent.stockpile.push_back(1);}
+		for(unsigned int i = 0; i < simulation.goods.size(); i++) {agent.stockpile.push_back(1);}
 		agent.satisfaction = 1.0;
-		for(unsigned int i = 0; i < simulation.numGoods; i++) {agent.offerPrice.push_back(1.0);}
-		for(unsigned int i = 0; i < simulation.numGoods; i++) {agent.lastOfferFulfilled.push_back(true);}
+		for(unsigned int i = 0; i < simulation.goods.size(); i++) {agent.offerPrice.push_back(1.0);}
+		for(unsigned int i = 0; i < simulation.goods.size(); i++) {agent.lastOfferFulfilled.push_back(true);}
 
 		// Add new agent
 		simulation.agents.push_back(agent);
 
 		// Increment job counter
 		jobId++;
-		if(jobId == numJobs){
+		if(jobId == this->simulation.jobs.size()){
 			jobId = 0;
 		}
 	}
@@ -81,17 +78,23 @@ void SimulationManager::run(unsigned int days)
 
 void SimulationManager::updateSimulation()
 {
-	// Clear simulation daily data
-	for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
-		this->simulation.quantityConsumed[goodId] = 0;
-		this->simulation.quantityProduced[goodId] = 0;
-		this->simulation.quantityTraded[goodId] = 0;
-		this->simulation.moneyTraded[goodId] = 0;
+	try {
+		// Clear simulation daily data
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
+			this->simulation.quantityConsumed[goodId] = 0;
+			this->simulation.quantityProduced[goodId] = 0;
+			this->simulation.quantityTraded[goodId] = 0;
+			this->simulation.moneyTraded[goodId] = 0;
 
-		// Clear offers
-		this->simulation.asks[goodId].clear();
-		this->simulation.bids[goodId].clear();
+			// Clear offers
+			this->simulation.asks[goodId].clear();
+			this->simulation.bids[goodId].clear();
+		}
+	} catch (std::exception &e) {
+		std::cout << "Error clearing simulation state: " << e.what() << std::endl;
+		throw e;
 	}
+
 
 	// Update simulation state
 	ProductionSystem::doProduction(this->simulation);
@@ -103,12 +106,12 @@ void SimulationManager::updateSimulation()
 void SimulationManager::updateAgents()
 {
 	// Market feedback
-	for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+	for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 		// Update asks
 		for(Offer &ask : this->simulation.asks[goodId]){
 			if(!ask.fulfilled){
 				// Reduce price by price change factor
-				this->simulation.agents[ask.agentId].offerPrice[goodId] *= 1.0 - PRICE_CHANGE_FACTOR;
+				this->simulation.agents[ask.agentId].offerPrice[goodId] *= 1.0f - PRICE_CHANGE_FACTOR;
 			}
 			this->simulation.agents[ask.agentId].lastOfferFulfilled[goodId] = ask.fulfilled;
 		}
@@ -116,7 +119,7 @@ void SimulationManager::updateAgents()
 		for(Offer &bid : this->simulation.bids[goodId]){
 			if(!bid.fulfilled){
 				// Increase price by price change factor
-				this->simulation.agents[bid.agentId].offerPrice[goodId] *= 1.0 + PRICE_CHANGE_FACTOR;
+				this->simulation.agents[bid.agentId].offerPrice[goodId] *= 1.0f + PRICE_CHANGE_FACTOR;
 			}
 			this->simulation.agents[bid.agentId].lastOfferFulfilled[goodId] = bid.fulfilled;
 		}
@@ -127,23 +130,33 @@ void SimulationManager::updateAgents()
 	try {
 		mostProfitableGoodId = this->statsManager.getMostProfitableGood();
 	} catch (std::exception &e) {
-		// Do not do any jo changing
+		// Do not do any job changing
 		return;
 	}
 
 	// Find the job(s) that produce that most profitable good
-	std::vector<unsigned int> mostProfitableJobIds;
-	for(int jobId = 0; jobId < this->simulation.jobs.size(); jobId++){
-		if(this->simulation.jobs[jobId].outputs[mostProfitableGoodId].second > 0){
-			mostProfitableJobIds.push_back(jobId);
-		}
-	}
+//	std::vector<unsigned int> mostProfitableJobIds;
+//	for(int jobId = 0; jobId < this->simulation.jobs.size(); jobId++){
+//		if(this->simulation.jobs[jobId].outputs[mostProfitableGoodId].second > 0){
+//			mostProfitableJobIds.push_back(jobId);
+//		}
+//	}
 
 	// Execute smart job changing
+//	for(Agent &agent : this->simulation.agents){
+//		if(agent.satisfaction < SATISFACTION_THRESHOLD){
+//			// Change job
+//			agent.jobId = mostProfitableJobIds.back();
+//		}
+//	}
+
+	// Execute random job changing
+	std::default_random_engine generator;
+	std::uniform_int_distribution<unsigned int> distribution(1, static_cast<unsigned int>(this->simulation.jobs.size()));
 	for(Agent &agent : this->simulation.agents){
 		if(agent.satisfaction < SATISFACTION_THRESHOLD){
 			// Change job
-			agent.jobId = mostProfitableJobIds.back();
+			agent.jobId = distribution(generator);
 		}
 	}
 }

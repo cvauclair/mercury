@@ -23,7 +23,8 @@ struct JobStats{
 };
 
 struct DayStats{
-	DayStats(unsigned int day, std::vector<GoodsStats> gStats, std::vector<JobStats> jStats): day(day), goodsStats(gStats), jobsStats(jStats) {}
+	DayStats(){};
+	DayStats(unsigned int day, std::vector<GoodsStats> &gStats, std::vector<JobStats> &jStats): day(day), goodsStats(gStats), jobsStats(jStats) {}
 	unsigned int day = 0;
 	std::vector<GoodsStats> goodsStats;
 	std::vector<JobStats> jobsStats;

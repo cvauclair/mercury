@@ -27,7 +27,6 @@ static const float SATISFACTION_THRESHOLD = 0.1;
 // Simulation state
 struct Simulation{
 	// Config
-	unsigned int numGoods;
 	std::vector<Goods> goods;
 	std::unordered_map<std::string, unsigned int> goodsIds;
 

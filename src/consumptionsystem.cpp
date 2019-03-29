@@ -26,12 +26,12 @@ void ConsumptionSystem::doConsumption(Simulation &simulation)
 		totalConsumption = goodsConsumed = limit = 0;
 
 		// Calculate total consumption
-		for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			totalConsumption += consumption[goodId];
 		}
 
 		// Execute the consumption
-		for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			limit = std::min(agent.stockpile[goodId], consumption[goodId]);
 			agent.stockpile[goodId] -= limit;
 			goodsConsumed += limit;

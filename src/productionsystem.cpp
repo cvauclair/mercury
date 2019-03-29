@@ -13,7 +13,7 @@ void ProductionSystem::doProduction(Simulation &simulation)
 
 		// Check if inputs are present in agent's stockpile
 		doProduction = true;
-		for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			if(agent.stockpile[goodId] < job.inputs[goodId].second){
 				// If not enough inputs, continue to next agent
 				doProduction = false;
@@ -25,7 +25,7 @@ void ProductionSystem::doProduction(Simulation &simulation)
 		}
 
 		// Execute the production
-		for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			agent.stockpile[goodId] -= job.inputs[goodId].second;
 			agent.stockpile[goodId] += job.outputs[goodId].second;
 

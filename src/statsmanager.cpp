@@ -106,7 +106,9 @@ std::string StatsManager::printDayStats(DayStats &dayStats)
 
 void StatsManager::recordStats(Simulation &simulation)
 {
-	this->stats.emplace_back(this->stats.size() + 1, StatsManager::compileGoodsStats(simulation), StatsManager::compileJobsStats(simulation));
+	auto goodsStats = StatsManager::compileGoodsStats(simulation);
+	auto jobsStats = StatsManager::compileJobsStats(simulation);
+	this->stats.emplace_back(this->stats.size() + 1, goodsStats, jobsStats);
 }
 
 std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
@@ -117,10 +119,10 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 	unsigned int quantityTraded = 0;
 	for(unsigned int i = 0, goodsId = 0; i < simulation.goods.size(); i++, goodsId = simulation.goodsIds[simulation.goods[i].key]){
 		// Bid ask stats
-		goodsStats[goodsId].numAsks = simulation.asks[goodsId].size();
-		goodsStats[goodsId].numBids = simulation.bids[goodsId].size();
-		goodsStats[goodsId].numFulfilledAsks = std::count_if(simulation.asks[goodsId].begin(), simulation.asks[goodsId].end(), [](Offer &ask){return ask.fulfilled;});
-		goodsStats[goodsId].numFulfilledBids = std::count_if(simulation.bids[goodsId].begin(), simulation.bids[goodsId].end(), [](Offer &bid){return bid.fulfilled;});
+		goodsStats[goodsId].numAsks = static_cast<unsigned int>(simulation.asks[goodsId].size());
+		goodsStats[goodsId].numBids = static_cast<unsigned int>(simulation.bids[goodsId].size());
+		goodsStats[goodsId].numFulfilledAsks = static_cast<unsigned int>(std::count_if(simulation.asks[goodsId].begin(), simulation.asks[goodsId].end(), [](Offer &ask){return ask.fulfilled;}));
+		goodsStats[goodsId].numFulfilledBids = static_cast<unsigned int>(std::count_if(simulation.bids[goodsId].begin(), simulation.bids[goodsId].end(), [](Offer &bid){return bid.fulfilled;}));
 
 		// Activity stats
 		goodsStats[goodsId].quantityProduced = simulation.quantityProduced[goodsId];
@@ -155,7 +157,7 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 	// Supply stats
 	for(Agent &agent : simulation.agents){
 		for(unsigned int i = 0, goodsId = simulation.goodsIds[simulation.goods[i].key]; i < simulation.goods.size(); i++){
-			goodsStats[goodsId].totalSupply += agent.stockpile[goodsId];
+			goodsStats[goodsId].totalSupply += static_cast<unsigned int>(agent.stockpile[goodsId]);
 		}
 	}
 

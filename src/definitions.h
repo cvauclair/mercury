@@ -43,6 +43,7 @@ struct Agent{
 
 // Offer definition
 struct Offer{
+	Offer(){};
 	Offer(unsigned int agentId, float price, unsigned int quantity): agentId(agentId), price(price), originalQuantity(quantity), quantity(quantity){}
 	unsigned int agentId = 0;
 	float price = 0.0;

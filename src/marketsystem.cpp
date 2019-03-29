@@ -27,7 +27,7 @@ void MarketSystem::generateOffers(Simulation &simulation)
 
 
 		// Generate offers (agents will ask for twice their needs)
-		for(unsigned int i = 0; i < simulation.numGoods; i++){
+		for(unsigned int i = 0; i < simulation.goods.size(); i++){
 			if(needs[i] > 0){
 				MarketSystem::generateBid(simulation, agentId, i, MarketSystem::getPrice(simulation, agentId, i, false), static_cast<unsigned int>(needs[i]));
 			}else if(needs[i] < 0){
@@ -58,7 +58,7 @@ void MarketSystem::resolveOffers(Simulation &simulation)
 	std::vector<Offer>::iterator bid;
 
 	// For each good
-	for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
+	for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 		// Sort asks and in increasing order of prices and bids in decreasing order
 		std::sort(simulation.asks[goodId].begin(), simulation.asks[goodId].end(), [](Offer &ask1, Offer &ask2){return ask1.price < ask2.price;});
 		std::sort(simulation.bids[goodId].begin(), simulation.bids[goodId].end(), [](Offer &bid1, Offer &bid2){return bid1.price > bid2.price;});

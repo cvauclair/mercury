@@ -2,6 +2,7 @@
 #define SIMULATIONMANAGER_H
 
 #include <vector>
+#include <random>
 
 #include "configloader.h"
 #include "simulation.h"
