@@ -9,7 +9,7 @@ void ProductionSystem::doProduction(Simulation &simulation)
 
 	for(Agent &agent : simulation.agents){
 		// Get the agent's job
-		job = simulation.jobs[agent.jobId];
+		job = simulation.jobs.at(agent.jobId);
 
 		// Check if inputs are present in agent's stockpile
 		doProduction = true;

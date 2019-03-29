@@ -91,7 +91,7 @@ void SimulationManager::updateSimulation()
 			this->simulation.bids[goodId].clear();
 		}
 	} catch (std::exception &e) {
-		std::cout << "Error clearing simulation state: " << e.what() << std::endl;
+		Logger::log("Error", "Clearing simulation state: " + std::string(e.what()), true);
 		throw e;
 	}
 

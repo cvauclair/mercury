@@ -12,6 +12,8 @@
 //#include "simulationframe.h"
 #include "statistics.h"
 
+#include "utility/logger.h"
+
 static const std::vector<std::string> goodsStatLabels = {
 	"SUPPLY",
 	"ASKS",

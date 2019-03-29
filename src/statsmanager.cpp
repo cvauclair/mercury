@@ -108,7 +108,12 @@ void StatsManager::recordStats(Simulation &simulation)
 {
 	auto goodsStats = StatsManager::compileGoodsStats(simulation);
 	auto jobsStats = StatsManager::compileJobsStats(simulation);
-	this->stats.emplace_back(this->stats.size() + 1, goodsStats, jobsStats);
+	DayStats newDayStats(static_cast<unsigned int>(this->stats.size() + 1), goodsStats, jobsStats);
+	try {
+		this->stats.push_back(newDayStats);
+	} catch (std::exception &e) {
+		Logger::log("Error", "Adding new day stats: " + std::string(e.what()), true);
+	}
 }
 
 std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
@@ -117,7 +122,10 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 	std::vector<GoodsStats> goodsStats(simulation.goods.size());
 
 	unsigned int quantityTraded = 0;
-	for(unsigned int i = 0, goodsId = 0; i < simulation.goods.size(); i++, goodsId = simulation.goodsIds[simulation.goods[i].key]){
+	unsigned int goodsId = 0;
+	for(unsigned int i = 0; i < simulation.goods.size(); i++){
+		goodsId = goodsId = simulation.goodsIds[simulation.goods[i].key];
+
 		// Bid ask stats
 		goodsStats[goodsId].numAsks = static_cast<unsigned int>(simulation.asks[goodsId].size());
 		goodsStats[goodsId].numBids = static_cast<unsigned int>(simulation.bids[goodsId].size());
@@ -165,17 +173,34 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 }
 
 std::vector<JobStats> StatsManager::compileJobsStats(Simulation &simulation)
-{
-	std::vector<JobStats> jobsStats(simulation.jobs.size());
-
-	// Number of workers
-	for(Agent &agent: simulation.agents){
-		jobsStats[agent.jobId].numAgents++;
+{	
+//	std::vector<JobStats> jobsStats(numJobs, JobStats());
+	std::vector<JobStats> jobsStats;
+	for(unsigned int i = 0; i < simulation.jobs.size(); i++){
+		jobsStats.push_back(JobStats());
 	}
 
+	// Number of workers
+	try {
+		for(Agent &agent: simulation.agents){
+			jobsStats[agent.jobId].numAgents++;
+		}
+	} catch (std::exception &e) {
+		Logger::log("Error", std::string("Incrementing number of workers: ") + e.what(), true);
+	}
+
+
 	// Average satisfaction and balance
-	std::vector<float> totalSatisfaction(simulation.jobs.size());
-	std::vector<float> totalBalance(simulation.jobs.size());
+//	std::vector<float> totalSatisfaction(simulation.jobs.size(), 0.0f);
+//	std::vector<float> totalBalance(simulation.jobs.size(), 0.0f);
+	std::vector<float> totalSatisfaction;
+	std::vector<float> totalBalance;
+	for(unsigned int i = 0; i < simulation.jobs.size(); i++){
+		totalSatisfaction.push_back(0.0f);
+		totalBalance.push_back(0.0f);
+	}
+
+
 	for(Agent &agent : simulation.agents) {
 		totalSatisfaction[agent.jobId] += agent.satisfaction;
 		totalBalance[agent.jobId] += agent.balance;

@@ -10,41 +10,36 @@ find_package(Lua REQUIRED)
 set(LUA_LIBRARIES "/usr/lib/liblua5.3.so")
 
 set(simulationSRCS
-#	src/agentmanager.cpp
-#    src/agentfacade.cpp
     src/configloader.cpp
 	src/consumptionsystem.cpp
-#	src/database.cpp
-#	src/databasecalculator.cpp
 	src/marketsystem.cpp
 	src/productionsystem.cpp
 	src/simulation.cpp
-#	src/simulationfactory.cpp
-#	src/simulationframe.cpp
 	src/simulationmanager.cpp
 	src/statsmanager.cpp
 )
+add_library(simulation SHARED ${simulationSRCS})
+
+set(utilitySRCS
+	src/utility/logger.cpp
+)
+add_library(utility SHARED ${utilitySRCS})
 
 set(testSRCS
 	test/test.cpp
-#	test/agentmanagertests.cpp
-#	test/consumptionsystemtests.cpp
-#	test/productionsystemtests.cpp
 )
 
 set(mercurySRCS
 	src/main.cpp
 )
 
-include_directories(src include src/vizualizer ${LUA_INCLUDE_DIR})
-
-add_library(simulation SHARED ${simulationSRCS})
+include_directories(src/utility src include src/vizualizer ${LUA_INCLUDE_DIR})
 
 # Simulation
 add_executable(mercury ${mercurySRCS})
-target_link_libraries(mercury simulation ${LUA_LIBRARIES})
+target_link_libraries(mercury simulation utility ${LUA_LIBRARIES})
 
 # Tests
 add_executable(test ${testSRCS})
-target_link_libraries(test simulation ${LUA_LIBRARIES})
+target_link_libraries(test simulation utility ${LUA_LIBRARIES})
 
