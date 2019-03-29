@@ -79,3 +79,8 @@ CMakeLists.txt.user
 
 # Ignore .csv data files
 *.csv
+
+# Ignore other stuff
+*.log
+spike/
+log.txt

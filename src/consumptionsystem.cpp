@@ -21,17 +21,17 @@ void ConsumptionSystem::doConsumption(Simulation &simulation)
 	unsigned int goodsConsumed = 0;
 	unsigned int limit = 0;
 
-	for(Agent<MAX_GOODS> &agent : simulation.agents){
+	for(Agent &agent : simulation.agents){
 		// Reset variables
 		totalConsumption = goodsConsumed = limit = 0;
 
 		// Calculate total consumption
-		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			totalConsumption += consumption[goodId];
 		}
 
 		// Execute the consumption
-		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
 			limit = std::min(agent.stockpile[goodId], consumption[goodId]);
 			agent.stockpile[goodId] -= limit;
 			goodsConsumed += limit;

@@ -13,23 +13,9 @@ extern "C" {
 
 #include "LuaBridge/LuaBridge.h"
 
+#include "definitions.h"
+
 static const unsigned int MAX_NAME_LENGTH = 32;
-
-struct Goods{
-	Goods(unsigned int id, std::string key, std::string name): id(id), key(key), name(name) {}
-	unsigned int id = 0;
-	std::string key = "";
-	std::string name = "";
-};
-
-struct Job{
-	Job(){}
-	Job(unsigned int id, std::string name): id(id), name(name) {}
-	unsigned int id = 0;
-	std::string name = "";
-	std::vector<std::pair<std::string, unsigned int>> inputs;
-	std::vector<std::pair<std::string, unsigned int>> outputs;
-};
 
 class ConfigLoader{
 	public:

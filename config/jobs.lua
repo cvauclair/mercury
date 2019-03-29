@@ -1,6 +1,7 @@
 jobs = {
 	{
 		id = 1,
+		key = "WOOD_CUTTER",
 		name = "Wood cutter",
 		inputs = {
 			{key = "TOOL", quantity = 1}
@@ -11,6 +12,7 @@ jobs = {
 	},
 	{
 		id = 2,
+		key = "FARMER",
 		name = "Farmer",
 		inputs = {
 			{key = "TOOL", quantity = 1}
@@ -21,6 +23,7 @@ jobs = {
 	},
 	{
 		id = 3,
+		key = "TOOL_MAKER",
 		name = "Tool maker",
 		inputs = {
 			{key = "WOOD", quantity = 1},
@@ -32,6 +35,7 @@ jobs = {
 	},
 	{
 		id = 4,
+		key = "IRON_MINER",
 		name = "Iron miner",
 		inputs = {
 			{key = "TOOL", quantity = 1}
@@ -42,6 +46,7 @@ jobs = {
 	},
 	{
 		id = 5,
+		key = "COAL_MINER",
 		name = "Coal miner",
 		inputs = {
 			{key = "TOOL", quantity = 1}
@@ -52,7 +57,8 @@ jobs = {
 	},
 	{
 		id = 6,
-		name = "Coal miner",
+		key = "IRON_SMELTER",
+		name = "Iron smelter",
 		inputs = {
 			{key = "IRON_ORE", quantity = 2},
 			{key = "COAL", quantity = 1}

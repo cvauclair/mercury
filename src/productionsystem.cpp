@@ -4,17 +4,17 @@
 void ProductionSystem::doProduction(Simulation &simulation)
 {
 	// Variables
-	Job<MAX_GOODS> job;
+	Job job;
 	bool doProduction = true;
 
-	for(Agent<MAX_GOODS> &agent : simulation.agents){
+	for(Agent &agent : simulation.agents){
 		// Get the agent's job
-		job = jobs[agent.jobId];
+		job = simulation.jobs.at(agent.jobId);
 
 		// Check if inputs are present in agent's stockpile
 		doProduction = true;
-		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-			if(agent.stockpile[goodId] < job.inputs[goodId]){
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
+			if(agent.stockpile[goodId] < job.inputs[goodId].second){
 				// If not enough inputs, continue to next agent
 				doProduction = false;
 				break;
@@ -25,12 +25,12 @@ void ProductionSystem::doProduction(Simulation &simulation)
 		}
 
 		// Execute the production
-		for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-			agent.stockpile[goodId] -= job.inputs[goodId];
-			agent.stockpile[goodId] += job.ouputs[goodId];
+		for(unsigned int goodId = 0; goodId < simulation.goods.size(); goodId++){
+			agent.stockpile[goodId] -= job.inputs[goodId].second;
+			agent.stockpile[goodId] += job.outputs[goodId].second;
 
-			simulation.quantityConsumed[goodId] += job.inputs[goodId];
-			simulation.quantityProduced[goodId] += job.ouputs[goodId];
+			simulation.quantityConsumed[goodId] += job.inputs[goodId].second;
+			simulation.quantityProduced[goodId] += job.outputs[goodId].second;
 		}
 	}
 }
