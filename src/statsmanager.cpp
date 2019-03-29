@@ -114,7 +114,8 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 	// Init good stats
 	std::vector<GoodsStats> goodsStats(simulation.goods.size());
 
-	for(unsigned int i = 0, goodsId = simulation.goodsIds[simulation.goods[i].key]; i < simulation.goods.size(); i++){
+	unsigned int quantityTraded = 0;
+	for(unsigned int i = 0, goodsId = 0; i < simulation.goods.size(); i++, goodsId = simulation.goodsIds[simulation.goods[i].key]){
 		// Bid ask stats
 		goodsStats[goodsId].numAsks = simulation.asks[goodsId].size();
 		goodsStats[goodsId].numBids = simulation.bids[goodsId].size();
@@ -124,7 +125,13 @@ std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
 		// Activity stats
 		goodsStats[goodsId].quantityProduced = simulation.quantityProduced[goodsId];
 		goodsStats[goodsId].quantityConsumed = simulation.quantityConsumed[goodsId];
-		goodsStats[goodsId].quantityTraded = simulation.quantityTraded[goodsId];
+
+		// Market stats
+		quantityTraded = 0;
+		for(Offer &offer: simulation.asks[goodsId]){
+			quantityTraded += offer.originalQuantity - offer.quantity;
+		}
+		goodsStats[goodsId].quantityTraded = quantityTraded;
 
 		// Money stats
 		goodsStats[goodsId].moneyTraded = simulation.moneyTraded[goodsId];
@@ -173,7 +180,11 @@ std::vector<JobStats> StatsManager::compileJobsStats(Simulation &simulation)
 	}
 
 	// Divide by number of agents per job
-	for(unsigned int i = 0; i < totalSatisfaction.size(); i++){
+	for(unsigned int i = 0; i < simulation.jobs.size(); i++){
+		if(jobsStats[i].numAgents == 0){
+			continue;
+		}
+
 		jobsStats[i].averageSatisfaction = totalSatisfaction[i]/jobsStats[i].numAgents;
 		jobsStats[i].averageBalance = totalBalance[i]/jobsStats[i].numAgents;
 	}
