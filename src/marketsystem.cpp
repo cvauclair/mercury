@@ -3,17 +3,17 @@
 void MarketSystem::generateOffers(Simulation &simulation)
 {
 	// Variables
-	int needs[MAX_GOODS] = {0};
+	std::vector<int> needs(simulation.numGoods);
 	unsigned int totalNeeds = 0;
 
 	unsigned int popSize = simulation.agents.size();
 	for(unsigned int agentId = 0; agentId < popSize; agentId++){
 		// Reset variables
-		for(int goodId = 0; goodId < MAX_GOODS; goodId++) {needs[goodId] = 0;}
+		for(int goodId = 0; goodId < simulation.numGoods; goodId++) {needs[goodId] = 0;}
 
 		// Get all needs (negative need is a surplus to be sold)
-		for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-			needs[goodId] = 2 * (jobs[simulation.agents[agentId].jobId].inputs[goodId] + consumption[goodId]) - simulation.agents[agentId].stockpile[goodId];
+		for(int goodId = 0; goodId < simulation.numGoods; goodId++){
+			needs[goodId] = 2 * (simulation.jobs[simulation.agents[agentId].jobId].inputs[goodId].second + consumption[goodId]) - simulation.agents[agentId].stockpile[goodId];
 
 			// Add to total positive needs if positive
 			if(needs[goodId] > 0){
@@ -25,7 +25,7 @@ void MarketSystem::generateOffers(Simulation &simulation)
 
 
 		// Generate offers (agents will ask for twice their needs)
-		for(unsigned int i = 0; i < MAX_GOODS; i++){
+		for(unsigned int i = 0; i < simulation.numGoods; i++){
 			if(needs[i] > 0){
 				MarketSystem::generateBid(simulation, agentId, i, MarketSystem::getPrice(simulation, agentId, i, false), needs[i]);
 			}else if(needs[i] < 0){
@@ -56,7 +56,7 @@ void MarketSystem::resolveOffers(Simulation &simulation)
 	std::vector<Offer>::iterator bid;
 
 	// For each good
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+	for(unsigned int goodId = 0; goodId < simulation.numGoods; goodId++){
 		// Sort asks and in increasing order of prices and bids in decreasing order
 		std::sort(simulation.asks[goodId].begin(), simulation.asks[goodId].end(), [](Offer &ask1, Offer &ask2){return ask1.price < ask2.price;});
 		std::sort(simulation.bids[goodId].begin(), simulation.bids[goodId].end(), [](Offer &bid1, Offer &bid2){return bid1.price > bid2.price;});

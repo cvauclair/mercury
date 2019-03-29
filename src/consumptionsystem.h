@@ -2,7 +2,7 @@
 #define CONSUMPTIONSYSTEM_H
 
 #include <vector>
-#include "config.h"
+//#include "config.h"
 #include "definitions.h"
 #include "statsmanager.h"
 

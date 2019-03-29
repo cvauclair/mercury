@@ -1,14 +1,16 @@
 #ifndef SIMULATIONMANAGER_H
 #define SIMULATIONMANAGER_H
 
+#include <vector>
+
+#include "configloader.h"
 #include "simulation.h"
+//#include "simulationframe.h"
 #include "statsmanager.h"
 
 #include "consumptionsystem.h"
 #include "marketsystem.h"
 #include "productionsystem.h"
-
-#include "statsmanager.h"
 
 // Class that initiates, oversees and overall manages the simulation as well as other parts of the program (e.g.: data collection)
 // Simulation cycle:
@@ -30,6 +32,7 @@ class SimulationManager{
 
 	private:
 		Simulation simulation;
+
 		StatsManager statsManager;
 };
 

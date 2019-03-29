@@ -11,11 +11,16 @@ set(LUA_LIBRARIES "/usr/lib/liblua5.3.so")
 
 set(simulationSRCS
 #	src/agentmanager.cpp
+#    src/agentfacade.cpp
     src/configloader.cpp
 	src/consumptionsystem.cpp
+#	src/database.cpp
+#	src/databasecalculator.cpp
 	src/marketsystem.cpp
 	src/productionsystem.cpp
 	src/simulation.cpp
+#	src/simulationfactory.cpp
+#	src/simulationframe.cpp
 	src/simulationmanager.cpp
 	src/statsmanager.cpp
 )
@@ -27,7 +32,7 @@ set(testSRCS
 #	test/productionsystemtests.cpp
 )
 
-set(simSRCS
+set(mercurySRCS
 	src/main.cpp
 )
 
@@ -36,8 +41,8 @@ include_directories(src include src/vizualizer ${LUA_INCLUDE_DIR})
 add_library(simulation SHARED ${simulationSRCS})
 
 # Simulation
-add_executable(sim ${simSRCS})
-target_link_libraries(sim simulation ${LUA_LIBRARIES})
+add_executable(mercury ${mercurySRCS})
+target_link_libraries(mercury simulation ${LUA_LIBRARIES})
 
 # Tests
 add_executable(test ${testSRCS})

@@ -72,6 +72,7 @@ std::vector<Job> ConfigLoader::loadJobsConfig(const char *filename)
 
 		// Load data
 		job.id = jobsRef[i+1]["id"].cast<unsigned int>();
+		job.key = jobsRef[i+1]["key"].cast<std::string>();
 		job.name = jobsRef[i+1]["name"].cast<std::string>();
 		for(unsigned int j = 0; j < jobsRef[i+1]["inputs"].length(); ++j){
 			job.inputs.push_back(std::pair<std::string, unsigned int>(jobsRef[i+1]["inputs"][j+1]["key"].cast<std::string>(),

@@ -5,9 +5,24 @@ StatsManager::StatsManager()
 
 }
 
+StatsManager::StatsManager(StatsManager &statManager)
+{
+	// Copy ctor
+}
+
 StatsManager::~StatsManager()
 {
 
+}
+
+void StatsManager::setGoodsIds(std::unordered_map<std::string, unsigned int> &goodsIds)
+{
+	this->goodsIds = goodsIds;
+}
+
+void StatsManager::setJobsIds(std::unordered_map<std::string, unsigned int> &jobsIds)
+{
+	this->jobsIds = jobsIds;
 }
 
 void StatsManager::exportStats(const std::string &filename)
@@ -16,288 +31,192 @@ void StatsManager::exportStats(const std::string &filename)
 	std::ofstream file;
 	file.open(filename);
 
-	unsigned int goodId = 0;	// Init variable for reuse in loops
-	unsigned int jobId = 0;
-
-	// Write column labels
-
-	// Write day label
-	file << "day,";
-
-	// Write total supply labels
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "supply,";
+	// Write labels
+	file << "DAY,";
+	for(std::string goodsStatLabel: goodsStatLabels){
+		for(auto [key, id]: this->goodsIds){
+			file << key << "_" << goodsStatLabel << ",";
+		}
 	}
-
-	// Write asks and bids labels
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "asks,";
+	for(std::string jobStatLabel: jobStatLabels){
+		for(auto [key, id]: this->jobsIds){
+			file << key << "_" << jobStatLabel << ",";
+		}
 	}
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "bids,";
-	}
-
-	// Write fulfilled asks and bids labels
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "fulfilledasks,";
-	}
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "fulfilledbids,";
-	}
-
-	// Write qty consumed, produced and traded labels
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "qtyconsumed,";
-	}
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "qtyproduced,";
-	}
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "qtytraded,";
-	}
-
-	// Write money traded and average price labels
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "moneytraded,";
-	}
-	for(goodId = 0; goodId < MAX_GOODS; goodId++){
-		file << "good" << goodId << "avgprice,";
-	}
-
-	// Write job stat labels
-	for(jobId = 0; jobId < jobs.size(); jobId++){
-		file << "job" << jobId << ",";
-	}
-	for(jobId = 0; jobId < jobs.size(); jobId++){
-		file << "job" << jobId << "sat,";
-	}
-	for(jobId = 0; jobId < jobs.size(); jobId++){
-		file << "job" << jobId << "bal,";
-	}
-
-	// Newline
 	file << std::endl;
 
-	// Write actual data
-	for(unsigned int day = 0; day < stats.size(); day++){
-		// Write day
-		file << day << ",";
-
-		// Write total supply labels
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].totalSupply[goodId] << ",";
-		}
-
-		// Write asks and bids
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].asksNb[goodId] << ",";
-		}
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].bidsNb[goodId] << ",";
-		}
-
-		// Write fulfilled asks and bids
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].fulfilledAsksNb[goodId] << ",";
-		}
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].fulfilledBidsNb[goodId] << ",";
-		}
-
-		// Write qty consumed, produced and traded
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].quantityConsumed[goodId] << ",";
-		}
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].quantityProduced[goodId] << ",";
-		}
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].quantityTraded[goodId] << ",";
-		}
-
-		// Write money traded and average price
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].moneyTraded[goodId] << ",";
-		}
-		for(goodId = 0; goodId < MAX_GOODS; goodId++){
-			file << this->stats[day].averagePrice[goodId] << ",";
-		}
-
-		// Write agent stats
-		// Write agent job distribution
-		for(jobId = 0; jobId < jobs.size(); jobId++){
-			file << this->stats[day].jobDistribution[jobId] << ",";
-		}
-
-		// Write agent average stats per job
-		for(jobId = 0; jobId < jobs.size(); jobId++){
-			file << this->stats[day].averageSatisfaction[jobId] << ",";
-		}
-		for(jobId = 0; jobId < jobs.size(); jobId++){
-			file << this->stats[day].averageBalance[jobId] << ",";
-		}
-
-		// Newline
-		file << std::endl;
+	// Write data
+	for(DayStats &dayStats: this->stats){
+		file << StatsManager::printDayStats(dayStats) << std::endl;
 	}
 
 	file.close();
 }
 
-void StatsManager::compileDailyStats(Simulation &simulation)
+std::string StatsManager::printDayStats(DayStats &dayStats)
 {
-	// Init new day stats
-	DayStats<MAX_GOODS> dayStats;
+	std::stringstream ss;
+	ss << dayStats.day << ",";
 
-	// Compile goods stats
-	getAsksNb(simulation, dayStats);
-	getBidsNb(simulation, dayStats);
-	getFulfilledAsksNb(simulation, dayStats);
-	getFulfilledBidsNb(simulation, dayStats);
-	getTotalSupply(simulation, dayStats);
-	getQuantityConsumed(simulation, dayStats);
-	getQuantityProduced(simulation, dayStats);
-	getQuantityTraded(simulation, dayStats);
-	getMoneyTraded(simulation, dayStats);
-	getAveragePrice(simulation, dayStats);
-
-	// Compile agent stats
-	getJobDistribution(simulation, dayStats);
-	getAverageSatisfaction(simulation, dayStats);
-	getAverageBalance(simulation, dayStats);
-
-	// Add the newly compiled stats to the database
-	this->stats.push_back(dayStats);
-}
-
-void StatsManager::getAsksNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get number of asks for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.asksNb[goodId] = simulation.asks[goodId].size();
+	// Goods stats
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.numAsks << ",";
 	}
-}
-
-void StatsManager::getBidsNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get number of bids for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.bidsNb[goodId] = simulation.bids[goodId].size();
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.numBids << ",";
 	}
-}
-
-void StatsManager::getFulfilledAsksNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get number of fulfilled asks for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.fulfilledAsksNb[goodId] = std::count_if(simulation.asks[goodId].begin(), simulation.asks[goodId].end(), [](Offer &ask){return ask.fulfilled;});
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.numFulfilledAsks << ",";
 	}
-}
-
-void StatsManager::getFulfilledBidsNb(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get number of fulfilled bids for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.fulfilledBidsNb[goodId] = std::count_if(simulation.bids[goodId].begin(), simulation.bids[goodId].end(), [](Offer &bid){return bid.fulfilled;});
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.numFulfilledBids << ",";
 	}
-}
-
-void StatsManager::getTotalSupply(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get total supply available for each good type
-	unsigned int totalSupply = 0;
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		totalSupply = 0;
-		for(Agent<MAX_GOODS> &agent : simulation.agents){
-			totalSupply += agent.stockpile[goodId];
-		}
-		dayStats.totalSupply[goodId] = totalSupply;
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.quantityProduced << ",";
 	}
-}
-
-void StatsManager::getQuantityConsumed(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get quantity consumed for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.quantityConsumed[goodId] = simulation.quantityConsumed[goodId];
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.quantityConsumed << ",";
 	}
-}
-
-void StatsManager::getQuantityProduced(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get quantity produced for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.quantityProduced[goodId] = simulation.quantityProduced[goodId];
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.quantityTraded << ",";
 	}
-}
-
-void StatsManager::getQuantityTraded(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get quantity traded for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.quantityTraded[goodId] = simulation.quantityTraded[goodId];
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.totalSupply << ",";
 	}
-}
-
-void StatsManager::getMoneyTraded(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	// Get money traded for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		dayStats.moneyTraded[goodId] = simulation.moneyTraded[goodId];
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.moneyTraded << ",";
 	}
+	for(GoodsStats &goodStats: dayStats.goodsStats){
+		ss << goodStats.averagePrice << ",";
+	}
+
+	// Jobs stats
+	for(JobStats &jobStats: dayStats.jobsStats){
+		ss << jobStats.numAgents << ",";
+	}
+	for(JobStats &jobStats: dayStats.jobsStats){
+		ss << jobStats.averageSatisfaction << ",";
+	}
+	for(JobStats &jobStats: dayStats.jobsStats){
+		ss << jobStats.averageBalance << ",";
+	}
+
+	return ss.str();
 }
 
-void StatsManager::getAveragePrice(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
+void StatsManager::recordStats(Simulation &simulation)
 {
-	// Get average price of goods sold/bought for each good type
-	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
-		if(simulation.quantityTraded[goodId] != 0){
-			dayStats.averagePrice[goodId] = simulation.moneyTraded[goodId]/simulation.quantityTraded[goodId];
+	this->stats.emplace_back(this->stats.size() + 1, StatsManager::compileGoodsStats(simulation), StatsManager::compileJobsStats(simulation));
+}
+
+std::vector<GoodsStats> StatsManager::compileGoodsStats(Simulation &simulation)
+{
+	// Init good stats
+	std::vector<GoodsStats> goodsStats(simulation.goods.size());
+
+	for(unsigned int i = 0, goodsId = simulation.goodsIds[simulation.goods[i].key]; i < simulation.goods.size(); i++){
+		// Bid ask stats
+		goodsStats[goodsId].numAsks = simulation.asks[goodsId].size();
+		goodsStats[goodsId].numBids = simulation.bids[goodsId].size();
+		goodsStats[goodsId].numFulfilledAsks = std::count_if(simulation.asks[goodsId].begin(), simulation.asks[goodsId].end(), [](Offer &ask){return ask.fulfilled;});
+		goodsStats[goodsId].numFulfilledBids = std::count_if(simulation.bids[goodsId].begin(), simulation.bids[goodsId].end(), [](Offer &bid){return bid.fulfilled;});
+
+		// Activity stats
+		goodsStats[goodsId].quantityProduced = simulation.quantityProduced[goodsId];
+		goodsStats[goodsId].quantityConsumed = simulation.quantityConsumed[goodsId];
+		goodsStats[goodsId].quantityTraded = simulation.quantityTraded[goodsId];
+
+		// Money stats
+		goodsStats[goodsId].moneyTraded = simulation.moneyTraded[goodsId];
+
+		// Average price
+
+		// Get average price of goods sold/bought for each good type
+		if(simulation.quantityTraded[goodsId] != 0){
+			goodsStats[goodsId].averagePrice = simulation.moneyTraded[goodsId]/simulation.quantityTraded[goodsId];
 		}else{
 			// If no good was traded, try to get last average price
-			if(this->stats.size() > 0){
-				dayStats.averagePrice[goodId] = this->stats.back().averagePrice[goodId];
-			}else{
-				dayStats.averagePrice[goodId] = 0;
-			}
+//			if(this->stats.size() > 0){
+//				dayStats.averagePrice[goodId] = this->stats.back().averagePrice[goodId];
+//			}else{
+//				dayStats.averagePrice[goodId] = 0;
+//			}
+		}
+
+	}
+
+	// Supply stats
+	for(Agent &agent : simulation.agents){
+		for(unsigned int i = 0, goodsId = simulation.goodsIds[simulation.goods[i].key]; i < simulation.goods.size(); i++){
+			goodsStats[goodsId].totalSupply += agent.stockpile[goodsId];
 		}
 	}
+
+	return goodsStats;
 }
 
-void StatsManager::getJobDistribution(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
+std::vector<JobStats> StatsManager::compileJobsStats(Simulation &simulation)
 {
-	for(Agent<MAX_GOODS> &agent : simulation.agents) {
-		dayStats.jobDistribution[agent.jobId]++;
+	std::vector<JobStats> jobsStats(simulation.jobs.size());
+
+	// Number of workers
+	for(Agent &agent: simulation.agents){
+		jobsStats[agent.jobId].numAgents++;
 	}
-}
 
-void StatsManager::getAverageSatisfaction(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	std::array<float, 6> totalSatisfaction = {0.0f};
-	for(Agent<MAX_GOODS> &agent : simulation.agents) {
+	// Average satisfaction and balance
+	std::vector<float> totalSatisfaction(simulation.jobs.size());
+	std::vector<float> totalBalance(simulation.jobs.size());
+	for(Agent &agent : simulation.agents) {
 		totalSatisfaction[agent.jobId] += agent.satisfaction;
-	}
-
-	// Divide by number of agents per job
-	for(unsigned int i = 0; i < totalSatisfaction.size(); i++){
-		dayStats.averageSatisfaction[i] = totalSatisfaction[i]/dayStats.jobDistribution[i];
-	}
-}
-
-void StatsManager::getAverageBalance(Simulation &simulation, DayStats<MAX_GOODS> &dayStats)
-{
-	std::array<float, 6> totalBalance = {0.0f};
-	for(Agent<MAX_GOODS> &agent : simulation.agents) {
 		totalBalance[agent.jobId] += agent.balance;
 	}
 
 	// Divide by number of agents per job
-	for(unsigned int i = 0; i < totalBalance.size(); i++){
-		dayStats.averageBalance[i] = totalBalance[i]/dayStats.jobDistribution[i];
+	for(unsigned int i = 0; i < totalSatisfaction.size(); i++){
+		jobsStats[i].averageSatisfaction = totalSatisfaction[i]/jobsStats[i].numAgents;
+		jobsStats[i].averageBalance = totalBalance[i]/jobsStats[i].numAgents;
 	}
+
+	return jobsStats;
 }
 
-DayStats<MAX_GOODS> *StatsManager::getDayStats(int day)
+std::vector<unsigned int> StatsManager::getNumAsks(std::string goodsKey)
+{
+	std::vector<unsigned int> numAsks(this->stats.size());
+	for(DayStats &dayStats: this->stats){
+		numAsks.push_back(dayStats.goodsStats[this->goodsIds[goodsKey]].numAsks);
+	}
+	return numAsks;
+}
+
+std::vector<unsigned int> StatsManager::getNumBids(std::string goodsKey)
+{
+	std::vector<unsigned int> numBids(this->stats.size());
+	for(DayStats &dayStats: this->stats){
+		numBids.push_back(dayStats.goodsStats[this->goodsIds[goodsKey]].numBids);
+	}
+	return numBids;
+}
+
+void StatsManager::getAveragePrice(Simulation &simulation, DayStats &dayStats)
+{
+	// Get average price of goods sold/bought for each good type
+//	for(unsigned int goodId = 0; goodId < MAX_GOODS; goodId++){
+//		if(simulation.quantityTraded[goodId] != 0){
+//			dayStats.averagePrice[goodId] = simulation.moneyTraded[goodId]/simulation.quantityTraded[goodId];
+//		}else{
+//			// If no good was traded, try to get last average price
+//			if(this->stats.size() > 0){
+//				dayStats.averagePrice[goodId] = this->stats.back().averagePrice[goodId];
+//			}else{
+//				dayStats.averagePrice[goodId] = 0;
+//			}
+//		}
+//	}
+}
+
+DayStats *StatsManager::getDayStats(int day)
 {
 	if(day < 0){
 		return &this->stats[0];
@@ -306,7 +225,7 @@ DayStats<MAX_GOODS> *StatsManager::getDayStats(int day)
 	}
 }
 
-DayStats<MAX_GOODS> StatsManager::getLastDayStats()
+DayStats StatsManager::getLastDayStats()
 {
 	if(this->stats.empty()){
 		throw std::out_of_range("Stats is empty!");
@@ -318,11 +237,11 @@ DayStats<MAX_GOODS> StatsManager::getLastDayStats()
 unsigned int StatsManager::getMostProfitableGood()
 {
 	unsigned int mostProfitableGoodId = 0;
-	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-		if(this->getLastDayStats().averagePrice[goodId] > this->getLastDayStats().averagePrice[mostProfitableGoodId]){
-			mostProfitableGoodId = goodId;
-		}
-	}
+//	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
+//		if(this->getLastDayStats().averagePrice[goodId] > this->getLastDayStats().averagePrice[mostProfitableGoodId]){
+//			mostProfitableGoodId = goodId;
+//		}
+//	}
 
 	return mostProfitableGoodId;
 }
@@ -336,20 +255,3 @@ void StatsManager::setSamplingInterval(unsigned int interval)
 {
 	samplingInterval = interval;
 }
-
-void StatsManager::print(unsigned int day)
-{
-	DayStats<MAX_GOODS> *ds = &this->stats[day];
-	printf("[Day %d]\n", day + 1);
-	printf("Good\tAsks\tBids\tFulfilled Asks (%)\tFulfilled Bids (%)\tMoney Traded\tAverage Price\n");
-	for(int goodId = 0; goodId < MAX_GOODS; goodId++){
-		printf("%s", goods[goodId].data());	// Good name
-		printf("\t%d", ds->asksNb[goodId]);	// Number of asks
-		printf("\t%d", ds->bidsNb[goodId]);	// Number of bids
-		printf("\t%d (%f)", ds->fulfilledAsksNb[goodId], (ds->asksNb[goodId] != 0 ? 100.0*ds->fulfilledAsksNb[goodId]/(float)ds->asksNb[goodId] : 0));	// Number of fulfilled asks
-		printf("\t%d (%f)", ds->fulfilledBidsNb[goodId], (ds->bidsNb[goodId] != 0 ? 100.0*ds->fulfilledBidsNb[goodId]/(float)ds->bidsNb[goodId] : 0));	// Number of fulfilled bids
-		printf("\t%f", ds->moneyTraded[goodId]);	// Value of goods traded
-		printf("\t\t%f\n", ds->averagePrice[goodId]);	// Average price
-	}
-}
-
