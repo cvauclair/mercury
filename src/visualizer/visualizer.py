@@ -105,9 +105,9 @@ figManager.window.showMaximized()
 # Plot jobs data
 plt.figure(2)
 
-add_subplot(131, 'Job', 'number', jobs_data)
-add_subplot(132, 'Average satisfaction', 'average_satisfaction', jobs_data)
-add_subplot(133, 'Average balance', 'average_balance', jobs_data)
+add_subplot(311, 'Job', 'number', jobs_data)
+add_subplot(312, 'Average satisfaction', 'average_satisfaction', jobs_data)
+add_subplot(313, 'Average balance', 'average_balance', jobs_data)
 
 figManager = plt.get_current_fig_manager()
 figManager.window.showMaximized()
